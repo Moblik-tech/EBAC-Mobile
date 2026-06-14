@@ -1,6 +1,9 @@
 using UnityEngine;
+using Moblik.Core.Singleton;
+using TMPro;
+using DG.Tweening;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Singleton<PlayerController>
 {
     [Header("Lerp")]
     public Transform target;
@@ -11,10 +14,26 @@ public class PlayerController : MonoBehaviour
     public string tagToCheckEnemy = "Enemy";
     public string tagToCheckEndLine = "EndLine";
 
+    public GameObject endScreen;
+
+    public bool invincible = false;
+
+    [Header("TextMeshPro")]
+    public TextMeshPro uITextPowerUp;
+
+    [Header("Coin Collector")]
+    public GameObject coinCollector;
+
     private bool _canRun;
     private Vector3 _pos;
+    private float _currentSpeed;
+    private Vector3 _startPosition;
 
-    public GameObject endScreen;
+    private void Start()
+    {
+        ResetSpeed();
+        _startPosition = transform.position;
+    }
 
     private void Update()
     {
@@ -31,14 +50,14 @@ public class PlayerController : MonoBehaviour
             transform.position = _pos;
         }
 
-        transform.Translate(speed * Time.deltaTime * transform.forward);
+        transform.Translate(_currentSpeed * Time.deltaTime * transform.forward);
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.CompareTag(tagToCheckEnemy))
         {
-            EndGame();
+            if (!invincible) EndGame();
         }
     }
 
@@ -46,7 +65,7 @@ public class PlayerController : MonoBehaviour
     {
         if (other.CompareTag(tagToCheckEndLine))
         {
-            EndGame();
+            if (!invincible) EndGame();
         }
     }
 
@@ -60,4 +79,42 @@ public class PlayerController : MonoBehaviour
     {
         _canRun = true;
     }
+
+    #region POWER UPS
+    public void SetPowerUpText(string s)
+    {
+        uITextPowerUp.text = s;
+    }
+
+    public void PowerUpSpeedUp(float f)
+    {
+        _currentSpeed = f;
+    }
+
+    public void ResetSpeed()
+    {
+        _currentSpeed = speed;
+    }
+
+    public void SetInvincible(bool b)
+    {
+        invincible = b;
+    }
+
+    public void ChangeHeight(float amount, float duration, float animationDuration, Ease ease)
+    {
+        transform.DOMoveY(_startPosition.y + amount, animationDuration).SetEase(ease);
+        Invoke(nameof(ResetHeight), duration);
+    }
+
+    public void ResetHeight()
+    {
+        transform.DOMoveY(_startPosition.y, 0.4f);
+    }
+
+    public void ChangeCoinCollectorSize(float size)
+    {
+        coinCollector.transform.localScale = Vector3.one * size;
+    }
+    #endregion
 }

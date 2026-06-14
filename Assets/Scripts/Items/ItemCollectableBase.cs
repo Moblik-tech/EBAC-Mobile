@@ -6,7 +6,7 @@ public class ItemCollectableBase : MonoBehaviour
     public GameObject graphicItem;
     public float timeToHide = 1f;
     public string collidedObjectTag = "Player";
-    public ParticleSystem particleSystem;
+    public ParticleSystem emittedParticleSystem;
 
     [Header("Sounds")]
     public AudioSource audioSource;
@@ -34,7 +34,7 @@ public class ItemCollectableBase : MonoBehaviour
 
     protected virtual void OnCollect()
     {
-        if (particleSystem != null) particleSystem.Play();
+        if (emittedParticleSystem != null) emittedParticleSystem.Play();
         if (audioSource != null) audioSource.Play();
     }
 }
