@@ -13,7 +13,7 @@ public class LevelManager : MonoBehaviour
     public List<LevelPieceBasedSetup> levelPieceBasedSetup;
 
     private int _index;
-    private GameObject _level;
+    private GameObject _wholeLevel;
 
     private List<LevelPieceBase> _spawnedPieces = new List<LevelPieceBase>();
     private LevelPieceBasedSetup _currentSetup;
@@ -32,9 +32,9 @@ public class LevelManager : MonoBehaviour
     #region Whole Level Generation
     private void SpawnNextLevel()
     {
-        if (_level != null)
+        if (_wholeLevel != null)
         {
-            Destroy(_level);
+            Destroy(_wholeLevel);
             _index++;
 
             if(_index >= levels.Count)
@@ -43,8 +43,8 @@ public class LevelManager : MonoBehaviour
             }
         }
         
-        _level = Instantiate(levels[_index], levelContainer);
-        _level.transform.localPosition = Vector3.zero;
+        _wholeLevel = Instantiate(levels[_index], levelContainer);
+        _wholeLevel.transform.localPosition = Vector3.zero;
     }
     #endregion
 
@@ -77,6 +77,8 @@ public class LevelManager : MonoBehaviour
         {
             CreateLevelPiece(_currentSetup.levelPiecesEnd);
         }
+
+        ColorManager.Instance.ChangeColorByType(_currentSetup.artType);
     }
 
     private void CreateLevelPiece(List<LevelPieceBase> list)
@@ -97,7 +99,7 @@ public class LevelManager : MonoBehaviour
 
         foreach (var art in spawnedPiece.GetComponentsInChildren<ArtPiece>())
         {
-            art.ChangePieceType(ArtManager.Instance.GetSetupByType(_currentSetup.artType).gameObject);
+            //art.ChangePieceType(ArtManager.Instance.GetSetupByType(_currentSetup.artType).gameObject);
         }
 
         _spawnedPieces.Add(spawnedPiece);
